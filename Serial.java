@@ -9,10 +9,14 @@ import java.io.*;
  */
 public class Serial {
 
+	//Serial port variables
 	private static SerialPort serialPort;
 	private static OutputStream out;
+	
+	//Packet to send over serial
 	private final static byte[] pack = { 0x56, 0x5A, 0x00, 0x01, 0x0B, 0x01, (byte) 0xF2 };
 	
+	//Trys to connect to a given port
 	public static boolean connect ( String port ) throws Exception
     {
         CommPortIdentifier portIdentifier = CommPortIdentifier.getPortIdentifier(port);
@@ -35,13 +39,11 @@ public class Serial {
                 return true;
             }
             else
-            {
-                System.out.println("Error: Only serial ports are handled by this example.");
                 return false;
-            }
         }     
     }
 	
+	//Sends packet, does nothing if not connected
 	public static void sendPack() {
 		if (out == null)
 			return;
@@ -56,6 +58,7 @@ public class Serial {
 		}
 	}
 	
+	//Closes the connection
 	public static void close() {
 		if (serialPort != null)
 			serialPort.close();

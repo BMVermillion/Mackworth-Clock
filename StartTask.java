@@ -1,43 +1,25 @@
 
 import java.awt.Color;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Frame;
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Random;
-
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 
 /*
  * This is where the task starts after the options menu closes. It reads in data, initializes other classes
  * handles the main loop of the program, records data, then outputs data.
  */
 public class StartTask implements Runnable{
+	
 	//Main window
 	private JFrame frame;
 	//Draw frame
 	private Task draw;
 	
-	//Data structs for input and output
-	private ArrayList<Pair> input_data;
-	private ArrayList<String> output_data;
-	
 	//Important variables
-	private String inputFile;
 	private String outputFile;
 	private double eventRate;
 	private int signalTime;
@@ -51,12 +33,13 @@ public class StartTask implements Runnable{
 	private long press_time = 0;
 	private boolean binary;
 	private boolean train;
-	private int counter = 0;
 	private double time;
 	private boolean skipping = false;
 	
+	//Probability of skipping for training
 	private final double trainProb = 0.3;
 	
+	//Set the variables
 	public StartTask(String out, double evnRate, double sig, double time, boolean isBinary, boolean isTrain) {
 		outputFile = out;
 		eventRate = evnRate;
@@ -64,8 +47,6 @@ public class StartTask implements Runnable{
 		binary = isBinary;
 		train = isTrain;
 		this.time = time*60*1000;
-		
-		output_data = new ArrayList<String>();
 	}
 	
 	@Override
@@ -76,21 +57,20 @@ public class StartTask implements Runnable{
 		makeListeners();
 		setFrame();		
 		setDrawPane();
+		UserFeedback.setTask(draw);
+		new Thread(new UserFeedback()).start();
 		////////
 				
 		frame.pack();
 		frame.setVisible(true);
 		
-		UserFeedback.setTask(draw);
-		
-		Thread t = new Thread(new UserFeedback());
-		t.start();
-		
+		//choose training notification
 		if (train)
 			Notifications.readyTrain();
 		else
 			Notifications.ready();
 		
+		//Start the task
 		clockTimer();
 	}
 	
@@ -100,14 +80,15 @@ public class StartTask implements Runnable{
 		boolean blockStart = true;
 		
 		//Timing variables
-		long startTime = 0;				
-		long relativeTime = 0;
-		int timeCounter = 0;
-		int skipTime = -1;
-		int waitTime = (int)(60/eventRate*1000);
+		long startTime = 0;						
+		long relativeTime = 0;						//Time from start
+		int timeCounter = 0;						//Counter for skip interval
+		int skipTime = -1;							//Time to skip at
+		int waitTime = (int)(60/eventRate*1000);	//Time for clock to wait
 		
 		ArrayList<String> output = new ArrayList<String>();
 	
+		//Send first serial pulse then wait
 		Serial.sendPack();
 		try {
 			Thread.sleep(100);
@@ -116,10 +97,13 @@ public class StartTask implements Runnable{
 			e1.printStackTrace();
 		}
 		
+		//For random number generation
 		Random random = new Random();
+		
 		
 		while (true) {		
 			
+			//First run through of the loop, initialoze some variables
 			if (first) {
 					startTime = System.nanoTime()/1000000;
 					Serial.sendPack();
@@ -133,7 +117,9 @@ public class StartTask implements Runnable{
 			else 
 					relativeTime = System.nanoTime()/1000000 - startTime;
 			
+			//If training...
 			if (train) {
+				//Random chance at skipping
 				if (random.nextDouble() <= trainProb) {
 					draw.skip();
 					skipping = true;
@@ -144,19 +130,26 @@ public class StartTask implements Runnable{
 				}
 				
 			}
+			//Not training...
 			else {
+				//If counter becomes greater the the signal window...
 				if (timeCounter >= signalTime || skipTime == -1 ) {
+					//Generate a new skip time
 					skipTime = (int)(random.nextDouble() * (signalTime/100))*100;
-					System.out.println(skipTime);
+					
+					//Reset counter and signal the start of a new block		Note: one skip appears per block
 					timeCounter = 0;
 					blockStart = true;
 					draw.next();
 				}
+				//When counter hits skip time... Skip!
 				else if (skipTime <= timeCounter) {
+					blockStart = false;
 					skipping = true;
 					skipTime = signalTime;
 					draw.skip();
 				}
+				//Normal operations...
 				else {
 					blockStart = false;
 					draw.next();
@@ -170,18 +163,18 @@ public class StartTask implements Runnable{
 				e.printStackTrace();
 			}
 			
-			
+			//If they miss a signal, draw the warning
 			if (key_pressed != 1 && skipping)
 				UserFeedback.setMiss();
 			else if (binary && key_pressed == 0)
 				UserFeedback.setMiss();
 			
+			//Update time variables
 			time -= waitTime;
 			timeCounter += waitTime;
 				
 			
 			//Record output
-		
 			output.add(
 					(blockStart ? 1 : 0) + ", " +
 					(skipping ? 1 : 0) + ", " +
@@ -191,8 +184,9 @@ public class StartTask implements Runnable{
 					);
 			
 			key_pressed = 0;
-			counter++;
+
 			
+			//If the end of the task has been reached... end the loop
 			if (time <= 0) {
 				break;
 			}
@@ -210,9 +204,8 @@ public class StartTask implements Runnable{
 	//Sets default options for the Window
 	private void setFrame() {
 		
-		frame = new JFrame("Viglence Test");
-		frame.setExtendedState(Frame.MAXIMIZED_BOTH);
-		//frame.setAlwaysOnTop(true);
+		frame = new JFrame("Mackworth Clock");
+		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		frame.setUndecorated(true);
 		frame.addMouseListener(cellClick);
 		frame.addKeyListener(buttonBindings);
@@ -226,18 +219,22 @@ public class StartTask implements Runnable{
 
 			@Override
 			public void keyPressed(KeyEvent arg0) {
+				//Time of button press
 				press_time = System.nanoTime()/10000000;
+				
+				//if a normal task (not binary)
 				if (!binary && arg0.getExtendedKeyCode() == KeyEvent.VK_SPACE) {
 					key_pressed = 1;
 					
+					//If pressed while not skipping, display error
 					if (!skipping) {
 						UserFeedback.setMiss();
 					}
 						
 					draw.repaint();
-			
 				}	
 				else if (binary) {
+					//Settings for up key press
 					if (arg0.getExtendedKeyCode() == KeyEvent.VK_UP) {
 						key_pressed = 1;
 						
@@ -247,6 +244,7 @@ public class StartTask implements Runnable{
 							
 						draw.repaint();
 					}
+					//Settings for down key press 
 					else if (arg0.getExtendedKeyCode() == KeyEvent.VK_DOWN) {
 						key_pressed = 2;
 						

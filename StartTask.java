@@ -139,7 +139,9 @@ public class StartTask implements Runnable{
 					
 					//Reset counter and signal the start of a new block		Note: one skip appears per block
 					timeCounter = 0;
+					
 					blockStart = true;
+					skipping = false;
 					draw.next();
 				}
 				//When counter hits skip time... Skip!
@@ -151,8 +153,9 @@ public class StartTask implements Runnable{
 				}
 				//Normal operations...
 				else {
-					blockStart = false;
+					
 					draw.next();
+					blockStart = false;
 					skipping = false;
 				}
 			}
@@ -220,7 +223,7 @@ public class StartTask implements Runnable{
 			@Override
 			public void keyPressed(KeyEvent arg0) {
 				//Time of button press
-				press_time = System.nanoTime()/10000000;
+				press_time = System.nanoTime()/1000000;
 				
 				//if a normal task (not binary)
 				if (!binary && arg0.getExtendedKeyCode() == KeyEvent.VK_SPACE) {

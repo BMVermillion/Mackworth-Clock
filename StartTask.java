@@ -224,6 +224,7 @@ public class StartTask implements Runnable{
 				
 				//if a normal task (not binary)
 				if (!binary && arg0.getExtendedKeyCode() == KeyEvent.VK_SPACE) {
+					Serial.sendPack();
 					key_pressed = 1;
 					
 					//If pressed while not skipping, display error
@@ -236,6 +237,7 @@ public class StartTask implements Runnable{
 				else if (binary) {
 					//Settings for up key press
 					if (arg0.getExtendedKeyCode() == KeyEvent.VK_UP) {
+						Serial.sendPack();
 						key_pressed = 1;
 						
 						if (!skipping) {
@@ -246,6 +248,7 @@ public class StartTask implements Runnable{
 					}
 					//Settings for down key press 
 					else if (arg0.getExtendedKeyCode() == KeyEvent.VK_DOWN) {
+						Serial.sendPack();
 						key_pressed = 2;
 						
 						if (skipping) {

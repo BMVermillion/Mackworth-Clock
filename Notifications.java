@@ -17,6 +17,10 @@ public class Notifications {
 		JOptionPane.showMessageDialog(new JFrame(), new JLabel("<html><center>Ready?</center> Press ok to start the task.</html>", JLabel.CENTER), "Finished", JOptionPane.PLAIN_MESSAGE);
 	}
 	
+	public static int exit() {
+		return JOptionPane.showConfirmDialog(new JFrame(), new JLabel("<html><center>Are you sure you want to quit?</center> Press ok to quit the task.</html>", JLabel.CENTER), "Finished", JOptionPane.OK_CANCEL_OPTION);
+	}
+	
 	public static void readyTrain() {
 		JOptionPane.showMessageDialog(new JFrame(), new JLabel("<html><center>Ready to start the training?</center> Press ok to start.</html>", JLabel.CENTER), "Finished", JOptionPane.PLAIN_MESSAGE);
 	}

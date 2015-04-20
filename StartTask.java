@@ -6,7 +6,9 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Random;
+
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 /*
  * This is where the task starts after the options menu closes. It reads in data, initializes other classes
@@ -35,6 +37,7 @@ public class StartTask implements Runnable{
 	private boolean train;
 	private double time;
 	private boolean skipping = false;
+	private boolean exit = false;
 	
 	//Probability of skipping for training
 	private final double trainProb = 0.3;
@@ -103,6 +106,16 @@ public class StartTask implements Runnable{
 		
 		while (true) {		
 			
+			if (exit) {
+				
+				if (Notifications.exit() == JOptionPane.OK_OPTION)
+					break;
+				else {
+					exit = false;
+					output.add("Program paused");
+				}
+			}
+				
 			//First run through of the loop, initialoze some variables
 			if (first) {
 					startTime = System.nanoTime()/1000000;
@@ -224,6 +237,9 @@ public class StartTask implements Runnable{
 			public void keyPressed(KeyEvent arg0) {
 				//Time of button press
 				press_time = System.nanoTime()/1000000;
+				
+				if (arg0.getKeyCode() == KeyEvent.VK_ESCAPE)
+					exit = true;
 				
 				//if a normal task (not binary)
 				if (!binary && arg0.getExtendedKeyCode() == KeyEvent.VK_SPACE) {

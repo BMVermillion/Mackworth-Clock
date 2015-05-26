@@ -27,6 +27,8 @@ public class Main{
 	private static JRadioButton serial;
 	private static JRadioButton binary;
 	private static JRadioButton train;
+	private static JRadioButton feedback;
+
 	
 	private static final int boxWidth = 150;
 	
@@ -49,8 +51,10 @@ public class Main{
 		serial = new JRadioButton("Serial");
 		binary = new JRadioButton("Binary");
 		train = new JRadioButton("Training");
+		feedback = new JRadioButton("Feedback");
 		
 		serial.setSelected(true);
+		feedback.setSelected(true);
 		
 		//Button to start the task
 		JButton button = new JButton("Start");
@@ -60,6 +64,7 @@ public class Main{
 		footer.add(serial);
 		footer.add(binary);
 		footer.add(train);
+		footer.add(feedback);
 		footer.add(Box.createHorizontalGlue());
 		footer.add(button);
 
@@ -134,7 +139,8 @@ public class Main{
 					Double.valueOf(sigText.getText()),
 					Double.valueOf(timeText.getText()),
 					binary.isSelected(),
-					train.isSelected());
+					train.isSelected(),
+					feedback.isSelected());
 			
 			//Destroy the window
 			settings.dispose();

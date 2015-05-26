@@ -65,6 +65,7 @@ public class UserFeedback implements Runnable {
 	
 	public static void setMiss() {
 		missTime = time;
+		Serial.sendPack();
 	}
 	
 

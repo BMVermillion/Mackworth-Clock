@@ -38,18 +38,20 @@ public class StartTask implements Runnable{
 	private double time;
 	private boolean skipping = false;
 	private boolean exit = false;
+	private boolean feedback;
 	
 	//Probability of skipping for training
 	private final double trainProb = 0.3;
 	
 	//Set the variables
-	public StartTask(String out, double evnRate, double sig, double time, boolean isBinary, boolean isTrain) {
+	public StartTask(String out, double evnRate, double sig, double time, boolean isBinary, boolean isTrain, boolean isFeedback) {
 		outputFile = out;
 		eventRate = evnRate;
 		signalTime = (int)(sig * 60 * 1000);
 		binary = isBinary;
 		train = isTrain;
 		this.time = time*60*1000;
+		feedback = isFeedback;
 	}
 	
 	@Override
@@ -180,9 +182,9 @@ public class StartTask implements Runnable{
 			}
 			
 			//If they miss a signal, draw the warning
-			if (key_pressed != 1 && skipping)
+			if (key_pressed != 1 && skipping && feedback)
 				UserFeedback.setMiss();
-			else if (binary && key_pressed == 0)
+			else if (binary && key_pressed == 0 && feedback)
 				UserFeedback.setMiss();
 			
 			//Update time variables
@@ -247,7 +249,7 @@ public class StartTask implements Runnable{
 					key_pressed = 1;
 					
 					//If pressed while not skipping, display error
-					if (!skipping) {
+					if (!skipping && feedback) {
 						UserFeedback.setMiss();
 					}
 						
@@ -259,7 +261,7 @@ public class StartTask implements Runnable{
 						Serial.sendPack();
 						key_pressed = 1;
 						
-						if (!skipping) {
+						if (!skipping && feedback) {
 							UserFeedback.setMiss();
 						}
 							

@@ -198,7 +198,7 @@ public class StartTask implements Runnable{
 					(skipping ? 1 : 0) + ", " +
 					key_pressed + ", " +
 					relativeTime + ", " +
-					((key_pressed == 1) ? press_time - startTime - relativeTime: 0)
+					((key_pressed == 1 || key_pressed == 2) ? press_time - startTime - relativeTime: 0)
 					);
 			
 			key_pressed = 0;
@@ -257,7 +257,7 @@ public class StartTask implements Runnable{
 				}	
 				else if (binary) {
 					//Settings for up key press
-					if (arg0.getExtendedKeyCode() == KeyEvent.VK_UP) {
+					if (arg0.getExtendedKeyCode() == KeyEvent.VK_A) {
 						Serial.sendPack();
 						key_pressed = 1;
 						
@@ -268,12 +268,12 @@ public class StartTask implements Runnable{
 						draw.repaint();
 					}
 					//Settings for down key press 
-					else if (arg0.getExtendedKeyCode() == KeyEvent.VK_DOWN) {
+					else if (arg0.getExtendedKeyCode() == KeyEvent.VK_L) {
 						Serial.sendPack();
 						key_pressed = 2;
 						
 						if (skipping) {
-							UserFeedback.setMiss();;
+							UserFeedback.setMiss(); 
 						}
 							
 						draw.repaint();

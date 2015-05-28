@@ -237,7 +237,10 @@ public class StartTask implements Runnable{
 
 			@Override
 			public void keyPressed(KeyEvent arg0) {
-				//Time of button press
+				//Time of button press 
+				if (key_pressed != 0)
+					return;
+				
 				press_time = System.nanoTime()/1000000;
 				
 				if (arg0.getKeyCode() == KeyEvent.VK_ESCAPE)

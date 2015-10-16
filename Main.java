@@ -2,6 +2,9 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -132,22 +135,29 @@ public class Main{
 				return;
 			}
 			
+			StartPack pack = new StartPack();
+			pack.out = outText.getText();
+			pack.evnRate = Double.valueOf(evnText.getText());
+			pack.sig = Double.valueOf(sigText.getText());
+			pack.time = Double.valueOf(timeText.getText());
+			pack.isBinary = binary.isSelected();
+			pack.isTrain = train.isSelected();
+			pack.isFeedback = feedback.isSelected();
+			
 			//Build the task
-			StartTask task = new StartTask(
-					outText.getText(), 
-					Double.valueOf(evnText.getText()),
-					Double.valueOf(sigText.getText()),
-					Double.valueOf(timeText.getText()),
-					binary.isSelected(),
-					train.isSelected(),
-					feedback.isSelected());
+			StartTask task = new StartTask(pack);
 			
 			//Destroy the window
 			settings.dispose();
 			
 			//Start the task
-			Thread t = new Thread(task);
-			t.start();
+			//Thread t = new Thread(task);
+			//t.start();
+			
+			Timer timer = new Timer();
+			Serial.sendPack2();
+			System.out.println( (long)(Double.valueOf(evnText.getText())/60*1000));
+			timer.schedule(task, 100, (long)(Double.valueOf(evnText.getText())/60*1000));
 			
 		}
 			
@@ -155,4 +165,14 @@ public class Main{
 	
 
 
+}
+
+class StartPack {
+	String out;
+	double evnRate;
+	double sig;
+	double time;
+	boolean isBinary;
+	boolean isTrain;
+	boolean isFeedback;
 }

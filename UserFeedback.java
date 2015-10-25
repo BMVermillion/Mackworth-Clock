@@ -14,64 +14,64 @@ import javax.swing.JPanel;
  */
 public class UserFeedback implements Runnable {
 
-	private static int hitTime = 0;
-	private static int missTime = 0;
-	private static int falseTime = 0;
-	
-	private static final int wait = 25;
-	private static final int time = 250;
-	
-	
-	private static Task t;
-	public void run() {
-		
-		while(true) {
-		
-			try {
-				Thread.sleep(wait);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		
-			if (hitTime > 0)
-				hitTime -= wait;
-		
-			if (missTime > 0)
-				missTime -= wait;
-		
-			if (falseTime > 0)
-				falseTime -= wait;
-		
-			t.repaint();
-			
-			//System.out.println(barTime);
-		}
-	}
-	
-	
-	
-	public static void drawMiss(Graphics2D g2, int w, int h) {
-		if (missTime <= 0)
-			return;
-		
-		g2.setColor(Color.RED);
-		g2.drawLine(w/2-100, h/2-100, w/2+100, h/2+100);
-		g2.drawLine(w/2+100, h/2-100, w/2-100, h/2+100);
+private static int hitTime = 0;
+private static int missTime = 0;
+private static int falseTime = 0;
 
-		g2.setStroke(new BasicStroke(10));
-		
-	}
-	
-	public static void setMiss() {
-		missTime = time;
-	}
-	
+private static final int wait = 25;
+private static final int time = 250;
 
-	
-	
-	
-	public static void setTask (Task task) {
-		t = task;
-	}
+
+private static Task t;
+public void run() {
+
+								while(true) {
+
+																try {
+																								Thread.sleep(wait);
+																} catch (InterruptedException e) {
+																								// TODO Auto-generated catch block
+																								e.printStackTrace();
+																}
+
+																if (hitTime > 0)
+																								hitTime -= wait;
+
+																if (missTime > 0)
+																								missTime -= wait;
+
+																if (falseTime > 0)
+																								falseTime -= wait;
+
+																t.repaint();
+
+																//System.out.println(barTime);
+								}
+}
+
+
+
+public static void drawMiss(Graphics2D g2, int w, int h) {
+								if (missTime <= 0)
+																return;
+
+								g2.setColor(Color.RED);
+								g2.drawLine(w/2-100, h/2-100, w/2+100, h/2+100);
+								g2.drawLine(w/2+100, h/2-100, w/2-100, h/2+100);
+
+								g2.setStroke(new BasicStroke(10));
+
+}
+
+public static void setMiss() {
+								missTime = time;
+}
+
+
+
+
+
+public static void setTask (Task task) {
+								t = task;
+}
 }

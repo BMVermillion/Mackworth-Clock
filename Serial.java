@@ -14,35 +14,35 @@ private static SerialPort serialPort;
 private static OutputStream out;
 
 //Packet to send over serial
-private final static byte[] pack1 = { 0x56, 0x5A, 0x00, 0x01, 0x0B, 0x01, (byte) 0xF2 };
-private final static byte[] pack2 = { 0x56, 0x5A, 0x00, 0x02, 0x0B, 0x00, 0x01, (byte) 0xF1 };
+private final static byte[] pack1 = { 0x56, 0x5A, 0x00, 0x01, 0x01, 0x01, (byte) 0xFC };
+private final static byte[] pack2 = { 0x56, 0x5A, 0x00, 0x02, 0x01, 0x00, 0x01, (byte) 0xFB };
 
 
 //Trys to connect to a given port
 public static boolean connect ( String port ) throws Exception
 {
-								CommPortIdentifier portIdentifier = CommPortIdentifier.getPortIdentifier(port);
+							CommPortIdentifier portIdentifier = CommPortIdentifier.getPortIdentifier(port);
 
-								if ( portIdentifier.isCurrentlyOwned() )
-								{
-																System.out.println("Error: Port is currently in use");
-																return false;
-								}
-								else
-								{
-																CommPort commPort = portIdentifier.open("CERN",2000);
+							if ( portIdentifier.isCurrentlyOwned() )
+							{
+															System.out.println("Error: Port is currently in use");
+															return false;
+							}
+							else
+							{
+															CommPort commPort = portIdentifier.open("CERN",2000);
 
-																if ( commPort instanceof SerialPort )
-																{
-																								serialPort = (SerialPort) commPort;
-																								serialPort.setSerialPortParams(57600,SerialPort.DATABITS_8,SerialPort.STOPBITS_1,SerialPort.PARITY_NONE);
-																								out = serialPort.getOutputStream();
+															if ( commPort instanceof SerialPort )
+															{
+																							serialPort = (SerialPort) commPort;
+																							serialPort.setSerialPortParams(57600,SerialPort.DATABITS_8,SerialPort.STOPBITS_1,SerialPort.PARITY_NONE);
+																							out = serialPort.getOutputStream();
 
-																								return true;
-																}
-																else
-																								return false;
-								}
+																							return true;
+															}
+															else
+																							return false;
+							}
 }
 
 //Sends packet, does nothing if not connected
